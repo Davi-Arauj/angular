@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { Course } from './course';
 import { CourseService } from './course.service';
 
@@ -17,9 +15,30 @@ export class CourseListComponent implements OnInit{
     constructor(private courseService: CourseService) { }
 
     ngOnInit(): void { 
-        this._courses = this.courseService.retrieveAll();
-        this.filteredCourses = this._courses;    
+        this.retrieveAll();  
     
+    }
+
+    retrieveAll(): void{
+        this.courseService.retrieveAll().subscribe({
+
+            next :courses =>{
+                this._courses = courses;
+                this.filteredCourses = this._courses;   
+            },
+            error: err => console.log('Erro', err)
+        })
+
+    }
+
+    deleteById(courseId: number){
+        this.courseService.deleteByIid(courseId).subscribe({
+            next:()=>{
+                console.log('Deleted with sucess')
+               this.retrieveAll();
+            },
+            error : err => console.log('Erro', err) 
+        });
     }
 
     set filter(value: string) { 
